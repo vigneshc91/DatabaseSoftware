@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -207,6 +209,26 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		tab_pane.addTab("View", view_panel);
 		tab_pane.addTab("Update", new JScrollPane(edit_panel));
 		tab_pane.addTab("Notify", new JScrollPane(notify_panel));		
+		
+		tab_pane.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent changeEvent) {
+				// TODO Auto-generated method stub
+				 JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+			     int index = sourceTabbedPane.getSelectedIndex();
+			     if(index == 2){			    	
+			    	model.setRowCount(0);
+					view_tab_data();
+					
+			     } else if(index == 4){
+			    	notifyTableModel.setRowCount(0);
+					NotifyTableData();
+					
+			     }
+			}
+			
+		});
 		
 		panel.add(tab_pane, BorderLayout.CENTER);
 		//interior();
