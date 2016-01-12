@@ -43,8 +43,7 @@ import org.h2.util.StringUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXMonthView;
+
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.RuleBasedNumberFormat;
@@ -64,6 +63,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.toedter.calendar.JDateChooser;
 
 import java.sql.*;
 import java.text.DateFormat;
@@ -178,8 +178,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	DateFormat simpleFormat = new SimpleDateFormat("dd-MMM-yyyy");
 	DateFormat standardFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
-	JDatePickerImpl datePicker1, datePicker2;
-	JXDatePicker dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
+	
+	//JXDatePicker dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
+	JDateChooser dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
 	Validator validator = new Validator();
 	
 	DatabaseApp(){
@@ -349,7 +350,6 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		
 		
-		
 		cand_first_name_p1 = new JTextField(15);
 		cand_last_name_p1 = new JTextField(15);
 		//cand_add_p1 = new JTextArea(4, 15);
@@ -366,11 +366,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		//date_of_birth_1 = new JTextField(15);
 		//date_of_anniversary_1 = new JTextField(15);
 		
-		dobDatePicker1 = new JXDatePicker();		
-		dobDatePicker1.setFormats(standardFormat);
+		dobDatePicker1 = new JDateChooser();		
+		//dobDatePicker1.setFormats(standardFormat);
 		
-		annivDatePicker1 = new JXDatePicker();		
-		annivDatePicker1.setFormats(standardFormat);
+		annivDatePicker1 = new JDateChooser();		
+		//annivDatePicker1.setFormats(standardFormat);
 		
 		save = new JButton("Save");
 		reset = new JButton("Reset");	
@@ -758,11 +758,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		//date_of_birth_3 = new JTextField(15);
 		//date_of_anniversary_3 = new JTextField(15);
 		
-		dobDatePicker2 = new JXDatePicker();		
-		dobDatePicker2.setFormats(standardFormat);
+		dobDatePicker2 = new JDateChooser();		
+		//dobDatePicker2.setFormats(standardFormat);
 		
-		annivDatePicker2 = new JXDatePicker();		
-		annivDatePicker2.setFormats(standardFormat);
+		annivDatePicker2 = new JDateChooser();		
+		//annivDatePicker2.setFormats(standardFormat);
 		
 		//save = new JButton("Save");
 		//reset = new JButton("Reset");
@@ -828,9 +828,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		cand_email_p3.setEditable(false);
 		//cand_add_p3.setEditable(false);
 		dobDatePicker2.setEnabled(false);
-		dobDatePicker2.setEditable(false);
+		//dobDatePicker2.setEditable(false);
 		annivDatePicker2.setEnabled(false);
-		annivDatePicker2.setEditable(false);
+		//annivDatePicker2.setEditable(false);
 		
 		
 		//save.addActionListener(this);
@@ -1641,9 +1641,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        		cand_ph_p3.setEditable(true);
 		        		cand_email_p3.setEditable(true);
 		        		dobDatePicker2.setEnabled(true);
-		        		dobDatePicker2.setEditable(true);
+		        		//dobDatePicker2.setEditable(true);
 		        		annivDatePicker2.setEnabled(true);
-		        		annivDatePicker2.setEditable(true);
+		        		//annivDatePicker2.setEditable(true);
 		        		
 		        		
 		        		//break;
@@ -1758,9 +1758,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			        cand_ph_p3.setEditable(false);
 			        cand_email_p3.setEditable(false);
 			        dobDatePicker2.setEnabled(false);
-			        dobDatePicker2.setEditable(false);
+			        //dobDatePicker2.setEditable(false);
 			        annivDatePicker2.setEnabled(false);
-			        annivDatePicker2.setEditable(false);
+			        //annivDatePicker2.setEditable(false);
 			        
 				}
 				catch(Exception e2){
@@ -1820,9 +1820,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        cand_ph_p3.setEditable(false);
 		        cand_email_p3.setEditable(false);
 		        dobDatePicker2.setEnabled(false);
-		        dobDatePicker2.setEditable(false);
+		        //dobDatePicker2.setEditable(false);
 		        annivDatePicker2.setEnabled(false);
-		        annivDatePicker2.setEditable(false);
+		        //annivDatePicker2.setEditable(false);
 		        
 			} catch(Exception e5){
 				System.err.println(e5);
@@ -1867,9 +1867,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		     cand_ph_p3.setEditable(false);
 		     cand_email_p3.setEditable(false);
 		     dobDatePicker2.setEnabled(false);
-		     dobDatePicker2.setEditable(false);
+		     //dobDatePicker2.setEditable(false);
 		     annivDatePicker2.setEnabled(false);
-		     annivDatePicker2.setEditable(false);
+		     //annivDatePicker2.setEditable(false);
 		     
 		}
 		
