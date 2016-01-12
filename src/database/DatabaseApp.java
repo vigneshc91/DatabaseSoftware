@@ -110,13 +110,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	JMenuItem export = new JMenuItem("Export");
 	JMenuItem exit = new JMenuItem("Exit");
 	
-	JMenu annualReport = new JMenu("Annual Report");
-	JMenuItem csvAnnualReport = new JMenuItem("CSV");
-	JMenuItem pdfAnnualReport = new JMenuItem("PDF");
+	JMenu allReport = new JMenu("All Report");
+	JMenuItem csvAllData = new JMenuItem("CSV");
+	JMenuItem pdfAllAddress = new JMenuItem("PDF");
 	
-	JMenu prasadam = new JMenu("Prasadam");
-	JMenuItem csvPrasadam = new JMenuItem("CSV");
-	JMenuItem pdfPrasadam = new JMenuItem("PDF");
+	JMenu notifyReport = new JMenu("Notification Report");
+	JMenuItem csvCurrentMonthData = new JMenuItem("CSV");
+	JMenuItem pdfCurrentMonthAddress = new JMenuItem("PDF");
 	
 	JMenuItem pdf = new JMenuItem("Generate Pdf");
 	JMenuItem refresh = new JMenuItem("Refresh");
@@ -222,13 +222,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		export.setMnemonic(KeyEvent.VK_E);
 		exit.setMnemonic(KeyEvent.VK_X);
 		
-		annualReport.setMnemonic(KeyEvent.VK_A);
-		csvAnnualReport.setMnemonic(KeyEvent.VK_C);
-		pdfAnnualReport.setMnemonic(KeyEvent.VK_P);
+		allReport.setMnemonic(KeyEvent.VK_A);
+		csvAllData.setMnemonic(KeyEvent.VK_C);
+		pdfAllAddress.setMnemonic(KeyEvent.VK_P);
 		
-		prasadam.setMnemonic(KeyEvent.VK_P);
-		csvPrasadam.setMnemonic(KeyEvent.VK_C);
-		pdfPrasadam.setMnemonic(KeyEvent.VK_P);
+		notifyReport.setMnemonic(KeyEvent.VK_P);
+		csvCurrentMonthData.setMnemonic(KeyEvent.VK_C);
+		pdfCurrentMonthAddress.setMnemonic(KeyEvent.VK_P);
 		
 //		pdf.setMnemonic(KeyEvent.VK_P);
 		search.setMnemonic(KeyEvent.VK_F);
@@ -261,23 +261,23 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 //		pdf.addActionListener(this);
 //		pdf.setAccelerator(KeyStroke.getKeyStroke('P', ActionEvent.CTRL_MASK));
 		
-		file.add(annualReport);
-		annualReport.setIcon(stmt_img);
-		csvAnnualReport.addActionListener(this);
-		csvAnnualReport.setIcon(rece_img);
-		annualReport.add(csvAnnualReport);
-		pdfAnnualReport.addActionListener(this);
-		pdfAnnualReport.setIcon(pdf_img);
-		annualReport.add(pdfAnnualReport);
+		file.add(allReport);
+		allReport.setIcon(stmt_img);
+		csvAllData.addActionListener(this);
+		csvAllData.setIcon(rece_img);
+		allReport.add(csvAllData);
+		pdfAllAddress.addActionListener(this);
+		pdfAllAddress.setIcon(pdf_img);
+		allReport.add(pdfAllAddress);
 		
-		file.add(prasadam);
-		prasadam.setIcon(st_img);
-		csvPrasadam.addActionListener(this);
-		csvPrasadam.setIcon(rece_img);
-		prasadam.add(csvPrasadam);
-		pdfPrasadam.addActionListener(this);
-		pdfPrasadam.setIcon(pdf_img);
-		prasadam.add(pdfPrasadam);
+		file.add(notifyReport);
+		notifyReport.setIcon(st_img);
+		csvCurrentMonthData.addActionListener(this);
+		csvCurrentMonthData.setIcon(rece_img);
+		notifyReport.add(csvCurrentMonthData);
+		pdfCurrentMonthAddress.addActionListener(this);
+		pdfCurrentMonthAddress.setIcon(pdf_img);
+		notifyReport.add(pdfCurrentMonthAddress);
 		
 		search.addActionListener(this);
 		search.setIcon(find_img);
@@ -634,12 +634,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	
 	void NotifyTableData(){
 		
+		int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 		
 		try{
 			Connection conn = DriverManager.
 				    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 			Statement stm = conn.createStatement();
-			String st = "select * from details";
+			String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth+" OR EXTRACT(MONTH FROM anniversary) = "+currentMonth;
 			ResultSet rs = stm.executeQuery(st);
 		
 			while (rs.next()){
@@ -1150,7 +1151,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			NotifyTableData();
 		}
 		
-		else if (e.getSource() == csvAnnualReport){
+		else if (e.getSource() == csvAllData){
 			int ret = chose.showSaveDialog(this);
 			File s;
 			if(ret == JFileChooser.APPROVE_OPTION){
@@ -1165,7 +1166,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					conn = DriverManager.
 						    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 					Statement stm = conn.createStatement();
-					String st = "call csvwrite('"+s+"', 'select no,initial,name,addr_1,addr_2,area,city,pincode,phone_num,email from details where annual_report = ''S'' ')";
+					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details ')";
 					stm.executeUpdate(st);
 					Telegraph tele = new Telegraph("Success", "CSV Generated Successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue que = new TelegraphQueue();
@@ -1177,7 +1178,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			}
 		}
 		
-		else if (e.getSource() == pdfAnnualReport){
+		else if (e.getSource() == pdfAllAddress){
 			int x = 0, y = 0;
 			PdfWriter writer = null;
 			int ret = gen_pdf.showSaveDialog(this);
@@ -1215,13 +1216,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        Connection conn = DriverManager.
 		            getConnection("jdbc:h2:~/databaseapp", "sa", "");
 		        Statement stm = conn.createStatement();
-		        String st = "select * from details where annual_report = 'S'";
+		        String st = "select * from details";
 		        ResultSet rs = stm.executeQuery(st);
 		        PdfContentByte canvas = writer.getDirectContentUnder();
 		        while(rs.next()){
 		        	
 		        	
-		        	String resultAddress = "NS No: "+rs.getString(1)+"\n"+rs.getString(3)+" "+rs.getString(2);
+		        	String resultAddress = "No: "+rs.getString(1)+"\n"+rs.getString(2)+" "+rs.getString(3);
 		        	
 		        	//address line 1 can't be empty so directly append it
 		        	resultAddress += "\n"+rs.getString(4);
@@ -1230,21 +1231,33 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	if(rs.getString(5) != null)
 		        		resultAddress += "\n"+rs.getString(5);
 		        	
-		        	//area can also be empty
+		        	//address line 3 can be empty
 		        	if(rs.getString(6) != null)
 		        		resultAddress += "\n"+rs.getString(6);
 		        	
-		        	//city can't be empty anyhow checking for type safety
+		        	//area can also be empty
 		        	if(rs.getString(7) != null)
 		        		resultAddress += "\n"+rs.getString(7);
 		        	
-		        	//pin code can be empty
+		        	//city can't be empty anyhow checking for type safety
 		        	if(rs.getString(8) != null)
 		        		resultAddress += "\n"+rs.getString(8);
 		        	
-		        	//phone number can be empty
+		        	//pin code can be empty
 		        	if(rs.getString(9) != null)
 		        		resultAddress += "\n"+rs.getString(9);
+		        	
+		        	//country can be empty
+		        	if(rs.getString(10) != null)
+		        		resultAddress += "\n"+rs.getString(10);
+		        	
+		        	//state can be empty
+		        	if(rs.getString(11) != null)
+		        		resultAddress += "\n"+rs.getString(11);
+		        	
+		        	//phone number can be empty
+		        	if(rs.getString(12) != null)
+		        		resultAddress += "\nPh: "+rs.getString(12);
 		        	
 		        	Phrase h = new Phrase(resultAddress);
 		        	
@@ -1289,9 +1302,10 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			//JOptionPane.showMessageDialog(null, "Pdf generated successfully...", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 		
-		else if (e.getSource() == csvPrasadam){
+		else if (e.getSource() == csvCurrentMonthData){
 			int ret = chose.showSaveDialog(this);
 			File s;
+			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 			if(ret == JFileChooser.APPROVE_OPTION){
 				s = chose.getSelectedFile();
 				String file_name = s.toString();
@@ -1304,7 +1318,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					conn = DriverManager.
 						    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 					Statement stm = conn.createStatement();
-					String st = "call csvwrite('"+s+"', 'select no,initial,name,addr_1,addr_2,area,city,pincode,phone_num,email from details where prasadam = ''S'' ')";
+					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth+"  OR EXTRACT(MONTH FROM anniversary) = "+currentMonth+"')";
 					stm.executeUpdate(st);
 					Telegraph tele = new Telegraph("Success", "CSV Generated Successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue que = new TelegraphQueue();
@@ -1316,8 +1330,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			}
 		}
 		
-		else if (e.getSource() == pdfPrasadam){
+		else if (e.getSource() == pdfCurrentMonthAddress){
 			int x = 0, y = 0;
+			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 			PdfWriter writer = null;
 			int ret = gen_pdf.showSaveDialog(this);
 			File s = null;
@@ -1354,13 +1369,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        Connection conn = DriverManager.
 		            getConnection("jdbc:h2:~/databaseapp", "sa", "");
 		        Statement stm = conn.createStatement();
-		        String st = "select * from details where prasadam = 'S'";
+		        String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth +" OR EXTRACT(MONTH FROM anniversary) = "+currentMonth;
 		        ResultSet rs = stm.executeQuery(st);
 		        PdfContentByte canvas = writer.getDirectContentUnder();
 		        while(rs.next()){
 		        	
 		        	
-		        	String resultAddress = "NS No: "+rs.getString(1)+"\n"+rs.getString(3)+" "+rs.getString(2);
+		        	String resultAddress = "No: "+rs.getString(1)+"\n"+rs.getString(2)+" "+rs.getString(3);
 		        	
 		        	//address line 1 can't be empty so directly append it
 		        	resultAddress += "\n"+rs.getString(4);
@@ -1369,21 +1384,39 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	if(rs.getString(5) != null)
 		        		resultAddress += "\n"+rs.getString(5);
 		        	
-		        	//area can also be empty
+		        	//address line 3 can be empty
 		        	if(rs.getString(6) != null)
 		        		resultAddress += "\n"+rs.getString(6);
 		        	
-		        	//city can't be empty anyhow checking for type safety
+		        	//area can also be empty
 		        	if(rs.getString(7) != null)
 		        		resultAddress += "\n"+rs.getString(7);
 		        	
-		        	//pin code can be empty
+		        	//city can't be empty anyhow checking for type safety
 		        	if(rs.getString(8) != null)
 		        		resultAddress += "\n"+rs.getString(8);
 		        	
-		        	//phone number can be empty
+		        	//pin code can be empty
 		        	if(rs.getString(9) != null)
 		        		resultAddress += "\n"+rs.getString(9);
+		        	
+		        	//country can be empty
+		        	if(rs.getString(10) != null)
+		        		resultAddress += "\n"+rs.getString(10);
+		        	
+		        	//state can be empty
+		        	if(rs.getString(11) != null)
+		        		resultAddress += "\n"+rs.getString(11);
+		        	
+		        	//phone number can be empty
+		        	if(rs.getString(12) != null)
+		        		resultAddress += "\nPh: "+rs.getString(12);
+		        	
+		        	if(rs.getDate(13)!= null && rs.getDate(13).getMonth() == currentMonth)
+		        		resultAddress += "\nDOB: "+rs.getString(13);
+		        	
+		        	if(rs.getDate(14) != null && rs.getDate(14).getMonth() == currentMonth)
+		        		resultAddress += "\nAnniversary: "+rs.getString(14);
 		        	
 		        	Phrase h = new Phrase(resultAddress);
 		        	
