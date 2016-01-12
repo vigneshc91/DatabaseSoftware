@@ -495,11 +495,12 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		edit_table.setRowSorter(sorter);
 		edit_table.addMouseListener(this);
 		edit_table.setRowHeight(60);
+		edit_table.setAutoCreateRowSorter(true);
 		Font ff = new Font("Arial", Font.PLAIN, 16);
-		Font tableFont = new Font("Calibiri", Font.PLAIN, 12);
+		Font tableFont = new Font("Calibiri", Font.PLAIN, 14);
 		viewTabStatusBar.setFont(ff);
 		edit_table.setFont(tableFont);
-		edit_table.getTableHeader().setFont(new Font("Calibiri", Font.BOLD, 12));
+		edit_table.getTableHeader().setFont(new Font("Calibiri", Font.BOLD, 18));
 		
 		InputMap im = edit_table.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		ActionMap am = edit_table.getActionMap();
@@ -571,8 +572,8 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			String state = rs.getString(11);
 			String phNum = rs.getString(12);
 			String email = rs.getString(13);
-			String dob = rs.getDate(14).toString();
-			String anniversary = rs.getDate(15).toString();
+			String dob = simpleFormat.format(rs.getDate(14));
+			String anniversary = simpleFormat.format(rs.getDate(15));
 			
 			
 			
@@ -606,10 +607,12 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		notifyTable.addMouseListener(this);
 //		donationRegisterTable.setRowHeight(150);
 		
-		Font ff = new Font("Arial", Font.PLAIN, 16);
+		Font ff = new Font("Arial", Font.PLAIN, 14);
 		notifyTable.setFont(ff);
 		notifyTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 18));
 		//notifyTable.getTableHeader().setPreferredSize(new Dimension(100, 100));
+		
+		notifyTable.setAutoCreateRowSorter(true);
 		
 		notifyTableModel.addColumn("NO.");
 		notifyTableModel.addColumn("FIRST NAME");
@@ -656,8 +659,8 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				String state = rs.getString(11);
 				String phNum = rs.getString(12);
 				String email = rs.getString(13);
-				String dob = rs.getDate(14).toString();
-				String anniversary = rs.getDate(15).toString();
+				String dob = simpleFormat.format(rs.getDate(14));
+				String anniversary = simpleFormat.format(rs.getDate(15));
 				
 				notifyTableModel.addRow(new Object[] {no, first_name, last_name, addr, area1, city1, pinCode1, country, state, phNum, email, dob, anniversary});
 	
