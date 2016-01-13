@@ -370,9 +370,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		dobDatePicker1 = new JDateChooser();		
 		//dobDatePicker1.setFormats(standardFormat);
+		dobDatePicker1.setDateFormatString("yyyy-MM-dd");
 		
 		annivDatePicker1 = new JDateChooser();		
 		//annivDatePicker1.setFormats(standardFormat);
+		annivDatePicker1.setDateFormatString("yyyy-MM-dd");
 		
 		save = new JButton("Save");
 		reset = new JButton("Reset");	
@@ -762,9 +764,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		dobDatePicker2 = new JDateChooser();		
 		//dobDatePicker2.setFormats(standardFormat);
+		dobDatePicker2.setDateFormatString("yyyy-MM-dd");
 		
 		annivDatePicker2 = new JDateChooser();		
 		//annivDatePicker2.setFormats(standardFormat);
+		annivDatePicker2.setDateFormatString("yyyy-MM-dd");
 		
 		//save = new JButton("Save");
 		//reset = new JButton("Reset");
