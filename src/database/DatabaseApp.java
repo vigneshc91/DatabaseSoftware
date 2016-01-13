@@ -45,10 +45,12 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 
+
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.Currency;
 import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -179,7 +181,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	DateFormat standardFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	
-	//JXDatePicker dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
+	
 	JDateChooser dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
 	Validator validator = new Validator();
 	
@@ -1419,7 +1421,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			//para.setAlignment(Element.RECTANGLE);
 			List<String> pdfDobContent = new ArrayList<String>();
 			List<String> pdfAnnivContent = new ArrayList<String>();
-			List<String> allPdfContent = new ArrayList<String>();
+			//List<String> allPdfContent = new ArrayList<String>();
 			
 			try{
 				Class.forName("org.h2.Driver");
@@ -1476,11 +1478,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	anniversary.setTime(rs.getDate(15));
 		        	
 		        	if(rs.getDate(14)!= null && dob.get(Calendar.MONTH)+1 == currentMonth){
-		        		resultAddress += "\nDOB: "+rs.getDate(14);
+		        		//resultAddress += "\nDOB: "+rs.getDate(14);
 		        		pdfDobContent.add(resultAddress);
 		        	}
 		        	else if(rs.getDate(15) != null && anniversary.get(Calendar.MONTH)+1 == currentMonth){
-		        		resultAddress += "\nAnniversary: "+rs.getDate(15);
+		        		//resultAddress += "\nAnniversary: "+rs.getDate(15);
 		        		pdfAnnivContent.add(resultAddress);
 		        	}
 		        	
@@ -1505,25 +1507,58 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	
 		        }
 		        
-		        allPdfContent.addAll(pdfDobContent);
-		        allPdfContent.addAll(pdfAnnivContent);
+		        //allPdfContent.addAll(pdfDobContent);
+		        //allPdfContent.addAll(pdfAnnivContent);
 		        
-		        for(int i=0; i<allPdfContent.size(); i++){
+		        /*for(int i=0; i<allPdfContent.size(); i++){
 		        	Phrase h = new Phrase(allPdfContent.get(i));
 		        	PdfPCell cell = new PdfPCell(h);
 		        	cell.setFixedHeight(100f);
 		        	table.addCell(cell);
-		        }
+		        }*/
 		        
-		        table.addCell("");
-		        table.addCell("");
+		        //table.addCell("");
+		        //table.addCell("");
 		        //table.addCell("");
 			}
 			catch(Exception e4){
 				System.err.println(e4);
 			}
 			try {
+				Paragraph dobHead = new Paragraph("Based on Date Of Birth");
+				dobHead.setAlignment(Element.ALIGN_CENTER);
+				doc.add(dobHead);
+				doc.add(Chunk.NEWLINE);
+				
+				for(int i=0; i<pdfDobContent.size(); i++){
+					Phrase h = new Phrase(pdfDobContent.get(i));
+		        	PdfPCell cell = new PdfPCell(h);
+		        	cell.setFixedHeight(100f);
+		        	table.addCell(cell);
+				}
+				table.addCell("");
+		        table.addCell("");
+		        
 				doc.add(table);
+				
+				doc.newPage();
+				
+				Paragraph annivHead = new Paragraph("Based on Date Of Birth");
+				annivHead.setAlignment(Element.ALIGN_CENTER);
+				doc.add(annivHead);
+				doc.add(Chunk.NEWLINE);
+				
+				for(int i=0; i<pdfAnnivContent.size(); i++){
+					Phrase h = new Phrase(pdfAnnivContent.get(i));
+		        	PdfPCell cell = new PdfPCell(h);
+		        	cell.setFixedHeight(100f);
+		        	table.addCell(cell);
+				}
+				table.addCell("");
+		        table.addCell("");
+		        
+				doc.add(table);
+				
 				
 			} catch (DocumentException e1) {
 				// TODO Auto-generated catch block
