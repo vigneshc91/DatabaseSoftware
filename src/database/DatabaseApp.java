@@ -3,6 +3,8 @@ package database;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -15,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormatSymbols;
 
 import javax.swing.*;
 import javax.swing.JFormattedTextField.AbstractFormatter;
@@ -46,6 +49,9 @@ import org.jdatepicker.impl.UtilDateModel;
 
 
 
+
+
+
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.Currency;
@@ -72,6 +78,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Dictionary;
 import java.util.Formatter;
@@ -97,10 +104,10 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	JTabbedPane tab_pane = new JTabbedPane();
 	JLabel donation_type, pay_mode, pay_num, dated, bank_nam, branch, date, receipt, bank_recvd, dob_1, anniversary_1, dob_2, anniversary_2, dob_3, anniversary_3;
 	JLabel addr_line_11, addr_line_21, addr_line_31, area1, city1, pin_code1, country_1, state_1, addr_line_12, addr_line_22, addr_line_32, area2, city2, pin_code2, country_2, state_2, addr_line_13, addr_line_23, addr_line_33, area3, city3, pin_code3, country_3, state_3;
-	JLabel viewTabStatusBar;
+	JLabel viewTabStatusBar, selectMonth;
 	
 	JTextField payment_num, bank_name, branch_nam, issue_dat, receipt_no, date_of_birth_1, date_of_anniversary_1, date_of_birth_2, date_of_anniversary_2, date_of_birth_3, date_of_anniversary_3;
-	JComboBox don_type, payment_mode, bank_received;	
+	JComboBox monthComboBox, don_type, payment_mode, bank_received;	
 	JLabel no_p1, last_name_p1, first_name_p1, add_p1, ph_p1, email_p1, amt_p1, other_ns_num_p1, no_p2, initial_p2, name_p2, add_p2, ph_p2, email_p2, amt_p2, other_ns_num_p2, no_p3, first_name_p3, last_name_p3, add_p3, ph_p3, email_p3, amt_p3, other_ns_num_p3;
 	JTextField num_p1, cand_first_name_p1, cand_last_name_p1, cand_ph_p1, cand_email_p1, cand_amt_p1, cand_other_ns_num_p1, num_p2, cand_initial_p2, cand_nam_p2, cand_ph_p2, cand_email_p2, cand_amt_p2, cand_other_ns_num_p2, num_p3, cand_first_name_p3, cand_last_name_p3, cand_ph_p3, cand_email_p3, cand_amt_p3, cand_other_ns_num_p3;
 	JTextField addr_11, addr_21, addr_31, area_1, city_town1, pin_code_1, country_t1, state_t1, addr_12, addr_22, addr_32, area_2, city_town2, pin_code_2, country_t2, state_t2, addr_13, addr_23, addr_33, area_3, city_town3, pin_code_3, country_t3, state_t3;
@@ -180,13 +187,14 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	DateFormat simpleFormat = new SimpleDateFormat("dd-MMM-yyyy");
 	DateFormat standardFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
-	
+	int currentMonth;
+	String[] monthNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};;
 	
 	JDateChooser dobDatePicker1, dobDatePicker2, annivDatePicker1, annivDatePicker2;
 	Validator validator = new Validator();
 	
 	DatabaseApp(){
-		super("Database");
+		super("Shanthi Gold House @ Chennai");
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Rectangle rec = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		int taskht = dim.height - rec.height;
@@ -211,8 +219,11 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		new_interior();		
 		view_interior();
-		edit_interior();		
-		NotifyInterior();
+		edit_interior();
+		
+		currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+		
+		NotifyInterior(currentMonth);
 		
 		tab_pane.addTab("New Entry", new JScrollPane(new_panel));
 		tab_pane.addTab("View", view_panel);
@@ -233,7 +244,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 										
 			     } else if(index == 3){
 			    	notifyTableModel.setRowCount(0);
-					NotifyTableData();
+					NotifyTableData(currentMonth);
 					
 			     }
 			}
@@ -628,8 +639,20 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 	
 	
 	
-	public void NotifyInterior(){
+	public void NotifyInterior(int monthInt){
+		
+		
+		
+		selectMonth = new JLabel("Select Month");
+		monthComboBox = new JComboBox(monthNames);
+		monthComboBox.addItemListener(new ItemChangeListener());
+		monthComboBox.setSelectedIndex(currentMonth);
+		
+		
+		
+		
 		BorderLayout layout = new BorderLayout();
+		
 		notifyPanel.setLayout(layout);
 		notifyTable.addMouseListener(this);
 //		donationRegisterTable.setRowHeight(150);
@@ -657,21 +680,23 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		notifyTableModel.addColumn("ANNIV");
 		
 		
-		NotifyTableData();				    
+		NotifyTableData(monthInt);				    
 		    
 		jspNotify = new JScrollPane(notifyTable);        
 		notifyPanel.add(jspNotify, layout.CENTER);
+		notifyPanel.add(monthComboBox, layout.SOUTH);
+		
 	}
 	
-	void NotifyTableData(){
+	void NotifyTableData(int monthInt){
 		
-		int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+		int month = monthInt + 1;
 		
 		try{
 			Connection conn = DriverManager.
 				    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 			Statement stm = conn.createStatement();
-			String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth+" OR EXTRACT(MONTH FROM anniversary) = "+currentMonth;
+			String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+month+" OR EXTRACT(MONTH FROM anniversary) = "+month;
 			ResultSet rs = stm.executeQuery(st);
 		
 			while (rs.next()){
@@ -724,6 +749,23 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		   
 
 
+	}
+	
+	class ItemChangeListener implements ItemListener{
+	    
+
+		@Override
+		public void itemStateChanged(ItemEvent event) {
+			// TODO Auto-generated method stub
+			 if (event.getStateChange() == ItemEvent.SELECTED) {
+		          Object item = event.getItem();
+		          int index = Arrays.asList(monthNames).indexOf(item);
+		          currentMonth = index;
+		          notifyTableModel.setRowCount(0);
+		          NotifyTableData(currentMonth);
+		          // do something with object
+		       }
+		}       
 	}
 	
 	void edit_interior(){
@@ -1207,7 +1249,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		else if (e.getSource() == refreshNotify){
 			notifyTableModel.setRowCount(0);
-			NotifyTableData();
+			NotifyTableData(currentMonth);
 		}
 		
 		else if (e.getSource() == csvAllData){
@@ -1225,7 +1267,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					conn = DriverManager.
 						    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 					Statement stm = conn.createStatement();
-					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details ')";
+					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details order by date_of_birth asc')";
 					stm.executeUpdate(st);
 					Telegraph tele = new Telegraph("Success", "CSV Generated Successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue que = new TelegraphQueue();
@@ -1275,7 +1317,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        Connection conn = DriverManager.
 		            getConnection("jdbc:h2:~/databaseapp", "sa", "");
 		        Statement stm = conn.createStatement();
-		        String st = "select * from details";
+		        String st = "select * from details order by date_of_birth asc";
 		        ResultSet rs = stm.executeQuery(st);
 		        PdfContentByte canvas = writer.getDirectContentUnder();
 		        while(rs.next()){
@@ -1364,7 +1406,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		else if (e.getSource() == csvCurrentMonthData){
 			int ret = chose.showSaveDialog(this);
 			File s;
-			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+//			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 			if(ret == JFileChooser.APPROVE_OPTION){
 				s = chose.getSelectedFile();
 				String file_name = s.toString();
@@ -1377,7 +1419,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					conn = DriverManager.
 						    getConnection("jdbc:h2:~/databaseapp", "sa", "");
 					Statement stm = conn.createStatement();
-					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth+"  OR EXTRACT(MONTH FROM anniversary) = "+currentMonth+"')";
+					String st = "call csvwrite('"+s+"', 'select no,first_name,last_name,addr_1,addr_2,addr_3,area,city,pincode,country,state,phone_num,email,date_of_birth,anniversary from details where EXTRACT(MONTH FROM date_of_birth) = "+(currentMonth+1)+"  OR EXTRACT(MONTH FROM anniversary) = "+(currentMonth+1)+"')";
 					stm.executeUpdate(st);
 					Telegraph tele = new Telegraph("Success", "CSV Generated Successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue que = new TelegraphQueue();
@@ -1391,7 +1433,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		
 		else if (e.getSource() == pdfCurrentMonthAddress){
 			int x = 0, y = 0;
-			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+//			int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 			PdfWriter writer = null;
 			int ret = gen_pdf.showSaveDialog(this);
 			File s = null;
@@ -1432,7 +1474,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        Connection conn = DriverManager.
 		            getConnection("jdbc:h2:~/databaseapp", "sa", "");
 		        Statement stm = conn.createStatement();
-		        String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+currentMonth +" OR EXTRACT(MONTH FROM anniversary) = "+currentMonth;
+		        String st = "select * from details where EXTRACT(MONTH FROM date_of_birth) = "+(currentMonth+1)+" OR EXTRACT(MONTH FROM anniversary) = "+(currentMonth+1);
 		        ResultSet rs = stm.executeQuery(st);
 		        PdfContentByte canvas = writer.getDirectContentUnder();
 		        while(rs.next()){
@@ -1481,14 +1523,15 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	Calendar anniversary = Calendar.getInstance();
 		        	anniversary.setTime(rs.getDate(15));
 		        	
-		        	if(rs.getDate(14)!= null && dob.get(Calendar.MONTH)+1 == currentMonth){
+		        	if(rs.getDate(14)!= null && dob.get(Calendar.MONTH)+1 == currentMonth+1){
 		        		//resultAddress += "\nDOB: "+rs.getDate(14);
 		        		pdfDobContent.add(resultAddress);
 		        	}
-		        	else if(rs.getDate(15) != null && anniversary.get(Calendar.MONTH)+1 == currentMonth){
+		        	else if(rs.getDate(15) != null && anniversary.get(Calendar.MONTH)+1 == currentMonth+1){
 		        		//resultAddress += "\nAnniversary: "+rs.getDate(15);
 		        		pdfAnnivContent.add(resultAddress);
 		        	}
+		        	
 		        	
 		        	//Phrase h = new Phrase(resultAddress);
 		        	
@@ -1529,7 +1572,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				System.err.println(e4);
 			}
 			try {
-				Paragraph dobHead = new Paragraph("Based on Date Of Birth");
+				Paragraph dobHead = new Paragraph("Based on Date Of Birth for the month of "+monthComboBox.getSelectedItem());
 				dobHead.setAlignment(Element.ALIGN_CENTER);
 				doc.add(dobHead);
 				doc.add(Chunk.NEWLINE);
@@ -1539,6 +1582,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	PdfPCell cell = new PdfPCell(h);
 		        	cell.setFixedHeight(100f);
 		        	table.addCell(cell);
+		        	
 				}
 				table.addCell("");
 		        table.addCell("");
@@ -1547,7 +1591,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				
 				doc.newPage();
 				
-				Paragraph annivHead = new Paragraph("Based on Date Of Birth");
+				Paragraph annivHead = new Paragraph("Based on Anniversary Date for the month of "+monthComboBox.getSelectedItem());
 				annivHead.setAlignment(Element.ALIGN_CENTER);
 				doc.add(annivHead);
 				doc.add(Chunk.NEWLINE);
@@ -1579,9 +1623,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		else if(e.getSource() == search){
 			tab_pane.setSelectedIndex(1);
 			String nameFilter = JOptionPane.showInputDialog(null, "Enter Name to Find");
-			int[] ar = {0,1,2,3,4,5,6,7}; 
+			 
 			if(nameFilter != null){
-				RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)"+nameFilter, ar);
+				RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)"+nameFilter);
 			
 				sorter.setRowFilter(rowFilter);
 			}
