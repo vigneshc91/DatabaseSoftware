@@ -1323,7 +1323,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        while(rs.next()){
 		        	
 		        	
-		        	String resultAddress = "No: "+rs.getString(1)+"\n"+rs.getString(2)+" "+rs.getString(3);
+		        	String resultAddress = rs.getString(2)+" "+rs.getString(3);
 		        	
 		        	//address line 1 can't be empty so directly append it
 		        	resultAddress += "\n"+rs.getString(4);
@@ -1459,9 +1459,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			doc.setMarginMirroring(true);
 			doc.open();
 			com.itextpdf.text.Font n = new com.itextpdf.text.Font(FontFamily.TIMES_ROMAN, 11);
-			PdfPTable table = new PdfPTable(3);
-			table.setComplete(true);
-			table.setWidthPercentage(110);
+			PdfPTable dobTable = new PdfPTable(3);
+			dobTable.setComplete(true);
+			dobTable.setWidthPercentage(110);
+			
+			PdfPTable annivTable = new PdfPTable(3);
+			annivTable.setComplete(true);
+			annivTable.setWidthPercentage(110);
 			
 			//Paragraph para = new Paragraph();
 			//para.setAlignment(Element.RECTANGLE);
@@ -1480,7 +1484,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        while(rs.next()){
 		        	
 		        	
-		        	String resultAddress = "No: "+rs.getString(1)+"\n"+rs.getString(2)+" "+rs.getString(3);
+		        	String resultAddress = rs.getString(2)+" "+rs.getString(3);
 		        	
 		        	//address line 1 can't be empty so directly append it
 		        	resultAddress += "\n"+rs.getString(4);
@@ -1525,7 +1529,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	
 		        	if(rs.getDate(14)!= null && dob.get(Calendar.MONTH)+1 == currentMonth+1){
 		        		//resultAddress += "\nDOB: "+rs.getDate(14);
-		        		pdfDobContent.add(resultAddress);
+		        		pdfDobContent.add(resultAddress);		        		
 		        	}
 		        	else if(rs.getDate(15) != null && anniversary.get(Calendar.MONTH)+1 == currentMonth+1){
 		        		//resultAddress += "\nAnniversary: "+rs.getDate(15);
@@ -1581,13 +1585,13 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					Phrase h = new Phrase(pdfDobContent.get(i));
 		        	PdfPCell cell = new PdfPCell(h);
 		        	cell.setFixedHeight(100f);
-		        	table.addCell(cell);
+		        	dobTable.addCell(cell);
 		        	
 				}
-				table.addCell("");
-		        table.addCell("");
+				dobTable.addCell("");
+		        dobTable.addCell("");
 		        
-				doc.add(table);
+				doc.add(dobTable);
 				
 				doc.newPage();
 				
@@ -1600,12 +1604,12 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					Phrase h = new Phrase(pdfAnnivContent.get(i));
 		        	PdfPCell cell = new PdfPCell(h);
 		        	cell.setFixedHeight(100f);
-		        	table.addCell(cell);
+		        	annivTable.addCell(cell);
 				}
-				table.addCell("");
-		        table.addCell("");
+				annivTable.addCell("");
+		        annivTable.addCell("");
 		        
-				doc.add(table);
+				doc.add(annivTable);
 				
 				
 			} catch (DocumentException e1) {
