@@ -238,7 +238,10 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				 JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
 			     int index = sourceTabbedPane.getSelectedIndex();			     
 			     
-			     if(index == 1){			    	
+			     if(index == 1){
+			    	RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)");						
+					sorter.setRowFilter(rowFilter);
+					
 			    	model.setRowCount(0);
 					view_tab_data();
 										
@@ -610,7 +613,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			String phNum = rs.getString(12);
 			String email = rs.getString(13);
 			String dob = simpleFormat.format(rs.getDate(14));
-			String anniversary = simpleFormat.format(rs.getDate(15));
+			String anniversary = rs.getDate(15) != null ? simpleFormat.format(rs.getDate(15)) : "";
 			
 			
 			
@@ -713,7 +716,7 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				String phNum = rs.getString(12);
 				String email = rs.getString(13);
 				String dob = simpleFormat.format(rs.getDate(14));
-				String anniversary = simpleFormat.format(rs.getDate(15));
+				String anniversary = rs.getDate(15) != null ? simpleFormat.format(rs.getDate(15)) : "";
 				
 				notifyTableModel.addRow(new Object[] {no, first_name, last_name, addr, area1, city1, pinCode1, country, state, phNum, email, dob, anniversary});
 	
@@ -1142,11 +1145,6 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				que.add(tele);
 				//JOptionPane.showMessageDialog(null, "Address can't be empty...", "Error", JOptionPane.ERROR_MESSAGE);
 				dobDatePicker1.setFocusable(true);
-			} else if (annivDatePicker1.getDate() == null){
-				Telegraph tele = new Telegraph("Enter Anniversary", "Anniversart Date can't be empty", TelegraphType.NOTIFICATION_WARNING, WindowPosition.BOTTOMRIGHT, 4000);				
-				que.add(tele);
-				//JOptionPane.showMessageDialog(null, "Address can't be empty...", "Error", JOptionPane.ERROR_MESSAGE);
-				annivDatePicker1.setFocusable(true);
 			}
 			
 			else {
@@ -1169,9 +1167,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 					Statement stm = conn.createStatement();
 					
 					String dobString = standardFormat.format(dobDatePicker1.getDate());
-					String annivString = standardFormat.format(annivDatePicker1.getDate()); 
+					String annivString = annivDatePicker1.getDate() != null ? "'"+standardFormat.format(annivDatePicker1.getDate())+"'" : null; 
 					
-					String st = "insert into details (first_name, last_name, addr_1, addr_2, addr_3, area, city, pincode, country, state, phone_num, email, date_of_birth, anniversary, last_updated_at) values("+"'"+cand_first_name_p1.getText()+"', '"+cand_last_name_p1.getText()+"'"+","+"'"+addr_11.getText()+"'"+", '"+addr_21.getText()+"', '"+addr_31.getText()+"', '"+area_1.getText()+"', '"+city_town1.getText()+"' ,"+" '"+pin_code_1.getText()+"', '"+country_t1.getText()+"', '"+state_t1.getText()+"', '"+cand_ph_p1.getText()+"', '"+cand_email_p1.getText()+"', '"+dobString+"', '"+annivString+"', '"+GetCurrentDateTime()+"')";
+					String st = "insert into details (first_name, last_name, addr_1, addr_2, addr_3, area, city, pincode, country, state, phone_num, email, date_of_birth, anniversary, last_updated_at) values("+"'"+cand_first_name_p1.getText()+"', '"+cand_last_name_p1.getText()+"'"+","+"'"+addr_11.getText()+"'"+", '"+addr_21.getText()+"', '"+addr_31.getText()+"', '"+area_1.getText()+"', '"+city_town1.getText()+"' ,"+" '"+pin_code_1.getText()+"', '"+country_t1.getText()+"', '"+state_t1.getText()+"', '"+cand_ph_p1.getText()+"', '"+cand_email_p1.getText()+"', '"+dobString+"', "+annivString+", '"+GetCurrentDateTime()+"')";
 					stm.executeUpdate(st);
 					Telegraph tele = new Telegraph("Success", "Saved successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue quee = new TelegraphQueue();
@@ -1243,6 +1241,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		} 
 		
 		else if (e.getActionCommand().equals("Refresh")){
+			RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)");			
+			sorter.setRowFilter(rowFilter);
+			
 			model.setRowCount(0);
 			view_tab_data();
 		}
@@ -1525,7 +1526,8 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 		        	dob.setTime(rs.getDate(14));
 		        	
 		        	Calendar anniversary = Calendar.getInstance();
-		        	anniversary.setTime(rs.getDate(15));
+		        	if(rs.getDate(15) != null)
+		        		anniversary.setTime(rs.getDate(15));
 		        	
 		        	if(rs.getDate(14)!= null && dob.get(Calendar.MONTH)+1 == currentMonth+1){
 		        		//resultAddress += "\nDOB: "+rs.getDate(14);
@@ -1787,13 +1789,8 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 				que.add(tele);
 				//JOptionPane.showMessageDialog(null, "Address can't be empty...", "Error", JOptionPane.ERROR_MESSAGE);
 				dobDatePicker2.setFocusable(true);
-			} else if (annivDatePicker2.getDate() == null){
-				Telegraph tele = new Telegraph("Enter Anniversary", "Anniversart Date can't be empty", TelegraphType.NOTIFICATION_WARNING, WindowPosition.BOTTOMRIGHT, 4000);				
-				que.add(tele);
-				//JOptionPane.showMessageDialog(null, "Address can't be empty...", "Error", JOptionPane.ERROR_MESSAGE);
-				annivDatePicker2.setFocusable(true);
 			}
-				
+			
 			 else {
 				try{
 					Class.forName("org.h2.Driver");
@@ -1802,9 +1799,9 @@ public class DatabaseApp extends JFrame implements ActionListener, MouseListener
 			        Statement stm = conn.createStatement();
 			        
 			        String dobString = standardFormat.format(dobDatePicker2.getDate());
-					String annivString = standardFormat.format(annivDatePicker2.getDate());
+					String annivString = annivDatePicker2.getDate() != null ? "'"+standardFormat.format(annivDatePicker2.getDate())+"'" : null;
 			        
-			        String st = "update details set first_name = '"+cand_first_name_p3.getText()+"', last_name = '"+cand_last_name_p3.getText()+"', "+"addr_1 = "+"'"+addr_13.getText()+"'"+", addr_2 = '"+addr_23.getText()+"', addr_3 = '"+addr_33.getText()+"', area = '"+area_3.getText()+"', city = '"+city_town3.getText()+"', pincode = '"+pin_code_3.getText()+"', country = '"+country_t3.getText()+"', state = '"+state_t3.getText()+"', phone_num = '"+cand_ph_p3.getText()+"', email = '"+cand_email_p3.getText()+"', date_of_birth = '"+dobString+"', anniversary = '"+annivString+"', last_updated_at = '"+GetCurrentDateTime()+"'  where no = "+num_p3.getText();
+			        String st = "update details set first_name = '"+cand_first_name_p3.getText()+"', last_name = '"+cand_last_name_p3.getText()+"', "+"addr_1 = "+"'"+addr_13.getText()+"'"+", addr_2 = '"+addr_23.getText()+"', addr_3 = '"+addr_33.getText()+"', area = '"+area_3.getText()+"', city = '"+city_town3.getText()+"', pincode = '"+pin_code_3.getText()+"', country = '"+country_t3.getText()+"', state = '"+state_t3.getText()+"', phone_num = '"+cand_ph_p3.getText()+"', email = '"+cand_email_p3.getText()+"', date_of_birth = '"+dobString+"', anniversary = "+annivString+", last_updated_at = '"+GetCurrentDateTime()+"'  where no = "+num_p3.getText();
 			        stm.executeUpdate(st);
 			        Telegraph tele = new Telegraph("Success", "Updated successfully...", TelegraphType.NOTIFICATION_DONE, WindowPosition.BOTTOMRIGHT, 4000);
 					TelegraphQueue quee = new TelegraphQueue();
